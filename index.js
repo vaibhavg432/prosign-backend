@@ -7,6 +7,7 @@ dotenv.config("./.env");
 const authRouter = require("./routes/auth-router");
 const adminRouter = require("./routes/admin-router");
 const userRouter = require("./routes/user-router");
+const mobileUserRouter = require("./routes/mobileUser-router");
 
 const app = express();
 db();
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/user", userRouter);
+app.use("/api/mobileUser", mobileUserRouter);
 
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);

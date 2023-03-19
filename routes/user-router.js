@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
 	getAllScreens,
+	getAllDocuments,
 	addOneScreenUser,
 	addMultipleScreensUser,
 	uploadOneDocument,
@@ -16,6 +17,7 @@ const {
 const { userLogin } = require("../middleware/auth");
 
 router.get("/screens", userLogin, getAllScreens);
+router.get("/documents", userLogin, getAllDocuments);
 router.post("/add-screen", userLogin, addOneScreenUser);
 router.post("/add-multiple-screens", userLogin, addMultipleScreensUser);
 router.post("/upload-document", userLogin, uploadOneDocument);

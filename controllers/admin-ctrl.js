@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const SCreen = require("../models/Screen");
+const Screen = require("../models/Screen");
 const Document = require("../models/Document");
 
 //All Normal Users with role: user
@@ -22,11 +22,10 @@ const getAllAdmins = async (req, res) => {
 	}
 };
 
-const updateScreenCountforUser = async (req, res) => {
-	const { id } = req.user;
-	const { screenCount } = req.body;
+const updateScreenLimitforUser = async (req, res) => {
+	const { screenLimit, userId } = req.body;
 	try {
-		const user = await User.find({ _id: id });
+		const user = await User.find({ _id: userId });
 		if (!user) {
 			return res.status(400).json({
 				success: false,
@@ -35,14 +34,14 @@ const updateScreenCountforUser = async (req, res) => {
 		}
 
 		const updatedUser = await User.findOneAndUpdate(
-			{ _id: id },
-			{ screenCount: screenCount },
+			{ _id: userId },
+			{ screenLimit: screenLimit },
 			{ new: true },
 		);
 
 		res.status(200).json({
 			success: true,
-			message: "Screen count updated",
+			message: "Screen Limit updated",
 			user: updatedUser,
 		});
 	} catch (err) {
@@ -111,6 +110,6 @@ module.exports = {
 	getAllUsers,
 	getAllAdmins,
 	removeUser,
-	updateScreenCountforUser,
+	updateScreenLimitforUser,
 	viewScreensOfOneUser,
 };

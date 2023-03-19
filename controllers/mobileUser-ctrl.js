@@ -1,0 +1,71 @@
+const User = require("../models/User");
+const Screen = require("../models/Screen");
+const Document = require("../models/Document");
+const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const login = async (req, res) => {
+	const { username, password } = req.body;
+	try {
+		const screen = await Screen.findOne({ username: username });
+		if (!screen) {
+			res.status(400).json({
+				success: false,
+				message: "Screen not found",
+			});
+		}
+
+		if (password != screen.password) {
+			res.status(400).json({
+				success: false,
+				message: "Wrong password",
+			});
+		}
+
+		const token = jwt.sign({ id: screen._id, role: "user" }, JWT_SECRET, {
+			expiresIn: "100h",
+		});
+		screen.status = "active";
+		await screen.save();
+		res.status(200).json({
+			success: true,
+			message: "Login successful",
+			token: token,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
+const checkCurrentStatus = async (req, res) => {
+	const { id } = req.user;
+	try {
+		const screen = await Screen.findById(id);
+		if (!screen) {
+			res.status(400).json({
+				success: false,
+				message: "Screen not found",
+			});
+		}
+		if (screen.isPlaying) {
+			return res.status(200).json({
+				success: true,
+				message: "Screen is playing",
+				document: screen.document,
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Screen is not playing",
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
+module.exports = {
+	login,
+	checkCurrentStatus,
+};

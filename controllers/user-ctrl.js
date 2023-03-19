@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Screen = require("../models/Screen");
+const Document = require("../models/Document");
 const crypto = require("crypto");
 
 //All Screens Attached to User
@@ -8,7 +9,7 @@ const getAllScreens = async (req, res) => {
 	try {
 		const user = await User.findById(id);
 		if (!user) {
-			res.status(400).json({
+			return res.status(400).json({
 				success: false,
 				message: "User not found",
 			});
@@ -26,6 +27,35 @@ const getAllScreens = async (req, res) => {
 			success: true,
 			message: "Screens found",
 			screens: screens,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
+const getAllDocuments = async (req, res) => {
+	const { id } = req.user;
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		const documents = await Document.find({ userId: id });
+		if (!documents) {
+			res.status(400).json({
+				success: false,
+				message: "Documents not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Documents found",
+			documents: documents,
 		});
 	} catch (err) {
 		res.status(500).json(err);
@@ -52,7 +82,12 @@ const addOneScreenUser = async (req, res) => {
 			});
 		}
 
-		const username = "screen" + user.screenCount + 1 + user.name;
+		const username =
+			"screen" +
+			user.screenCount +
+			1 +
+			user.name +
+			crypto.randomBytes(4).toString("hex");
 		const password = crypto.randomBytes(8).toString("hex");
 
 		const screen = new Screen({
@@ -80,9 +115,9 @@ const addMultipleScreensUser = async (req, res) => {
 	const { count } = req.body;
 
 	try {
-		const user = User.findById(id);
+		const user = await User.findById(id);
 		if (!user) {
-			res.status(400).json({
+			return res.status(400).json({
 				success: false,
 				message: "User not found",
 			});
@@ -90,7 +125,7 @@ const addMultipleScreensUser = async (req, res) => {
 
 		const remainingScreens = user.screenLimit - user.screens.length;
 		if (remainingScreens - count < 0) {
-			res.status(400).json({
+			return res.status(400).json({
 				success: false,
 				message: "Screen limit reached",
 			});
@@ -98,7 +133,12 @@ const addMultipleScreensUser = async (req, res) => {
 
 		const screens = [];
 		for (let i = 0; i < count; i++) {
-			const username = "screen" + user.screenCount + 1 + user.name;
+			const username =
+				"screen" +
+				user.screenCount +
+				1 +
+				user.name +
+				crypto.randomBytes(4).toString("hex");
 			const password = crypto.randomBytes(8).toString("hex");
 
 			const screen = new Screen({
@@ -314,6 +354,7 @@ const stopDocumentOnOneScreen = async (req, res) => {
 
 module.exports = {
 	getAllScreens,
+	getAllDocuments,
 	addOneScreenUser,
 	uploadOneDocument,
 	uploadMultipleDocument,
