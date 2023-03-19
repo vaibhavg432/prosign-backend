@@ -4,6 +4,10 @@ const dotenv = require("dotenv");
 const db = require("./db");
 dotenv.config("./.env");
 
+const authRouter = require("./routes/auth-router");
+const adminRouter = require("./routes/admin-router");
+const userRouter = require("./routes/user-router");
+
 const app = express();
 db();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +21,10 @@ app.get("/", (req, res) => {
 		message: "Hello World",
 	});
 });
+
+app.use("/api/auth", authRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/user", userRouter);
 
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
