@@ -4,7 +4,7 @@ const User = require("../models/User");
 const getAllDocuments = async (req, res) => {
 	const { id } = req.user;
 	if (!id) {
-		res.status(400).json({
+		return res.status(400).json({
 			success: false,
 			message: "Invalid ID",
 		});
@@ -13,7 +13,7 @@ const getAllDocuments = async (req, res) => {
 	try {
 		const user = await User.findById(id);
 		if (!user) {
-			res.status(400).json({
+			return res.status(400).json({
 				success: false,
 				message: "User not found",
 			});
@@ -34,7 +34,7 @@ const uploadDocument = async (req, res) => {
 	const { id } = req.user;
 	const { link } = req.body;
 	if (!id) {
-		res.status(400).json({
+		return res.status(400).json({
 			success: false,
 			message: "Invalid ID",
 		});

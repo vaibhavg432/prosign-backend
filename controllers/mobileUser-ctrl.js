@@ -10,14 +10,21 @@ const login = async (req, res) => {
 	try {
 		const screen = await Screen.findOne({ username: username });
 		if (!screen) {
-			res.status(400).json({
+			return res.status(400).json({
 				success: false,
 				message: "Screen not found",
 			});
 		}
 
+		if (screen.status === "active") {
+			return res.status(400).json({
+				success: false,
+				message: "Screen is already logged in",
+			});
+		}
+
 		if (password != screen.password) {
-			res.status(400).json({
+			return res.status(400).json({
 				success: false,
 				message: "Wrong password",
 			});
@@ -38,12 +45,34 @@ const login = async (req, res) => {
 	}
 };
 
+const logout = async (req, res) => {
+	const { id } = req.user;
+	try {
+		const screen = await Screen.findById(id);
+		if (!screen) {
+			return res.status(400).json({
+				success: false,
+				message: "Screen not found",
+			});
+		}
+
+		screen.status = "inactive";
+		await screen.save();
+		res.status(200).json({
+			success: true,
+			message: "Logout successful",
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
 const checkCurrentStatus = async (req, res) => {
 	const { id } = req.user;
 	try {
 		const screen = await Screen.findById(id);
 		if (!screen) {
-			res.status(400).json({
+			return res.status(400).json({
 				success: false,
 				message: "Screen not found",
 			});
