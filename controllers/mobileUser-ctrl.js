@@ -80,6 +80,7 @@ const checkCurrentStatus = async (req, res) => {
 		if (screen.isPlaying) {
 			return res.status(200).json({
 				success: true,
+				playing: true,
 				message: "Screen is playing",
 				document: screen.document,
 			});
@@ -87,6 +88,7 @@ const checkCurrentStatus = async (req, res) => {
 
 		res.status(200).json({
 			success: true,
+			playing: false,
 			message: "Screen is not playing",
 		});
 	} catch (err) {
@@ -96,5 +98,6 @@ const checkCurrentStatus = async (req, res) => {
 
 module.exports = {
 	login,
+	logout,
 	checkCurrentStatus,
 };
