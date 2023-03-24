@@ -72,37 +72,37 @@ const login = async (req, res) => {
 		const { email, password } = req.body;
 		//validation
 		if (!email || !password) {
-			return res.status(400).json({
+			return res.status(200).json({
 				success: false,
-				message: "Please enter all fields",
+				message: "Please Enter all Fields",
 			});
 		}
 
 		const user = await User.findOne({ email });
 		if (!user) {
-			return res.status(400).json({
+			return res.status(200).json({
 				success: false,
 				message: "User does not exist",
 			});
 		}
 
-		console.log(password);
 		const isMatch = await bcrypt.compare(password, user.password);
 		if (!isMatch) {
-			return res.status(400).json({
+			return res.status(200).json({
 				success: false,
 				message: "Invalid credentials",
 			});
 		}
 
 		const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
-			expiresIn: 3600,
+			expiresIn: 2592000,
 		});
 
 		res.status(200).json({
 			success: true,
 			message: "User logged in successfully",
 			token,
+			role: user.role,
 			user: {
 				id: user._id,
 				name: user.name,
@@ -122,9 +122,26 @@ const resetPassword = async (req, res) => {
 			.status(400)
 			.json({ success: false, message: "Invalid request" });
 	try {
-		const { email, password, confirmPassword } = req.body;
+		const { currentPassword, password, confirmPassword } = req.body;
+		const user = await User.findById(id);
+
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User does not exist",
+			});
+		}
+
+		const isMatch = await bcrypt.compare(currentPassword, user.password);
+		if (!isMatch) {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid credentials",
+			});
+		}
+
 		//validation
-		if (!email || !password || !confirmPassword) {
+		if (!password || !confirmPassword) {
 			return res.status(400).json({
 				success: false,
 				message: "Please enter all fields",
@@ -147,15 +164,6 @@ const resetPassword = async (req, res) => {
 
 		const salt = await bcrypt.genSalt(10);
 		const hash = await bcrypt.hash(password, salt);
-
-		const user = await User.findOne({ email });
-
-		if (!user) {
-			return res.status(400).json({
-				success: false,
-				message: "User does not exist",
-			});
-		}
 
 		user.password = hash;
 		const savedUser = await user.save();

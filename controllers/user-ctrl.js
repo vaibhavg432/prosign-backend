@@ -3,6 +3,27 @@ const Screen = require("../models/Screen");
 const Document = require("../models/Document");
 const crypto = require("crypto");
 
+const getUser = async (req, res) => {
+	const { id } = req.user;
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "User found",
+			user: user,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
 //All Screens Attached to User
 const getAllScreens = async (req, res) => {
 	const { id } = req.user;
@@ -33,6 +54,36 @@ const getAllScreens = async (req, res) => {
 	}
 };
 
+const getOneDocument = async (req, res) => {
+	const { id } = req.user;
+	const { documentId } = req.params;
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		const document = await Document.findById(documentId);
+		if (!document) {
+			res.status(400).json({
+				success: false,
+				message: "Document not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Document found",
+			document: document,
+		});
+	} catch (error) {
+		res.status(500).json(err);
+	}
+};
+
 const getAllDocuments = async (req, res) => {
 	const { id } = req.user;
 	try {
@@ -56,6 +107,36 @@ const getAllDocuments = async (req, res) => {
 			success: true,
 			message: "Documents found",
 			documents: documents,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
+const currentPlayingScreens = async (req, res) => {
+	const { id } = req.user;
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		const screens = await Screen.find({ userId: id });
+		if (!screens) {
+			res.status(400).json({
+				success: false,
+				message: "Screens not found",
+			});
+		}
+
+		const playingScreens = screens.filter((screen) => screen.isPlaying);
+		res.status(200).json({
+			success: true,
+			message: "Screens found",
+			screens: playingScreens,
 		});
 	} catch (err) {
 		res.status(500).json(err);
@@ -238,6 +319,7 @@ const playDocumentOnAllScreens = async (req, res) => {
 			screen.document = documentId;
 			screen.isPlaying = true;
 			screen.isUpdated = 1 - screen.isUpdated;
+			screen.lastUpdated = Date.now();
 			await screen.save();
 		}
 
@@ -353,8 +435,11 @@ const stopDocumentOnOneScreen = async (req, res) => {
 };
 
 module.exports = {
+	getUser,
 	getAllScreens,
+	getOneDocument,
 	getAllDocuments,
+	currentPlayingScreens,
 	addOneScreenUser,
 	uploadOneDocument,
 	uploadMultipleDocument,

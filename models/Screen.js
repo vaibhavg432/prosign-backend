@@ -28,6 +28,9 @@ const screenSchema = new mongoose.Schema({
 		type: Number,
 		default: 0,
 	},
+	lastUpdated: {
+		type: Date,
+	},
 	isPlaying: {
 		type: Boolean,
 		default: false,
