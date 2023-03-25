@@ -218,7 +218,7 @@ const addMultipleScreensUser = async (req, res) => {
 				"screen" +
 				user.screenCount +
 				1 +
-				user.name +
+				user.name.split(" ")[0] +
 				crypto.randomBytes(4).toString("hex");
 			const password = crypto.randomBytes(8).toString("hex");
 
@@ -291,6 +291,40 @@ const uploadMultipleDocument = async (req, res) => {
 			message: "Documents uploaded",
 		});
 	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
+const deleteOneDocument = async (req, res) => {
+	const { id } = req.user;
+	const { documentId } = req.body;
+	try {
+		const document = await Document.findById(documentId);
+		const screens = await Screen.find({
+			document: documentId,
+			isPlaying: true,
+		});
+
+		if (screens.length > 0) {
+			return res.status(200).json({
+				success: false,
+				message: "Document is being played on some screens",
+			});
+		}
+
+		if (document.userId != id) {
+			return res.status(200).json({
+				success: false,
+				message: "Document does not belong to user",
+			});
+		}
+
+		await Document.findByIdAndDelete(documentId);
+		res.status(200).json({
+			success: true,
+			message: "Document deleted",
+		});
+	} catch (error) {
 		res.status(500).json(err);
 	}
 };
@@ -443,6 +477,7 @@ module.exports = {
 	addOneScreenUser,
 	uploadOneDocument,
 	uploadMultipleDocument,
+	deleteOneDocument,
 	addMultipleScreensUser,
 	playDocumentOnAllScreens,
 	playDocumentOnOneScreen,

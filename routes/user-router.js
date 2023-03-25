@@ -11,6 +11,7 @@ const {
 	addMultipleScreensUser,
 	uploadOneDocument,
 	uploadMultipleDocument,
+	deleteOneDocument,
 	playDocumentOnAllScreens,
 	stopDocumentOnAllScreens,
 	playDocumentOnOneScreen,
@@ -32,5 +33,6 @@ router.post("/play-document-all-screens", userLogin, playDocumentOnAllScreens);
 router.post("/play-document-one-screen", userLogin, playDocumentOnOneScreen);
 router.post("/stop-document-all-screens", userLogin, stopDocumentOnAllScreens);
 router.post("/stop-document-one-screen", userLogin, stopDocumentOnOneScreen);
+router.delete("/delete-document", userLogin, deleteOneDocument);
 
 module.exports = router;
