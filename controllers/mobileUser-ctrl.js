@@ -96,8 +96,38 @@ const checkCurrentStatus = async (req, res) => {
 	}
 };
 
+const getOneDocument = async (req, res) => {
+	const { id } = req.user;
+	const { documentId } = req.params;
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		const document = await Document.findById(documentId);
+		if (!document) {
+			res.status(400).json({
+				success: false,
+				message: "Document not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Document found",
+			document: document,
+		});
+	} catch (error) {
+		res.status(500).json(err);
+	}
+};
 module.exports = {
 	login,
 	logout,
 	checkCurrentStatus,
+	getOneDocument,
 };

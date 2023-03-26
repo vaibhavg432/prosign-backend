@@ -13,21 +13,21 @@ const register = async (req, res) => {
 
 		//validation
 		if (!name || !email || !password || !confirmPassword) {
-			return res.status(400).json({
+			return res.status(200).json({
 				success: false,
 				message: "Please enter all fields",
 			});
 		}
 
 		if (password.length < 6) {
-			return res.status(400).json({
+			return res.status(200).json({
 				success: false,
 				message: "Password must be at least 6 characters long",
 			});
 		}
 
 		if (password !== confirmPassword) {
-			return res.status(400).json({
+			return res.status(200).json({
 				success: false,
 				message: "Passwords do not match",
 			});
@@ -35,7 +35,7 @@ const register = async (req, res) => {
 
 		const user = await User.find({ email });
 		if (user.length > 0) {
-			return res.status(400).json({
+			return res.status(200).json({
 				success: false,
 				message: "User already exists",
 			});
