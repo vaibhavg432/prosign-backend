@@ -100,7 +100,7 @@ const getOneDocument = async (req, res) => {
 	const { id } = req.user;
 	const { documentId } = req.params;
 	try {
-		const user = await User.findById(id);
+		const user = await Screen.findById(id);
 		if (!user) {
 			return res.status(400).json({
 				success: false,
