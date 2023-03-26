@@ -22,12 +22,13 @@ const UserSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 	address: {
-		street: String,
-		city: String,
-		state: String,
-		zip: String,
+		type: String,
+		default: "",
 	},
-	phone: String,
+	phone: {
+		type: String,
+		default: "",
+	},
 	role: {
 		type: String,
 		enum: Object.values(userType),
@@ -38,8 +39,14 @@ const UserSchema = new mongoose.Schema({
 		enum: Object.values(activeStatus),
 		default: activeStatus.active,
 	},
-	avatar: String,
-	bio: String,
+	avatar: {
+		type: String,
+		default: "",
+	},
+	bio: {
+		type: String,
+		default: "",
+	},
 	social: {
 		facebook: String,
 		twitter: String,

@@ -11,18 +11,20 @@ const {
 	addMultipleScreensUser,
 	uploadOneDocument,
 	uploadMultipleDocument,
+	updateDocumentName,
 	deleteOneDocument,
 	playDocumentOnAllScreens,
 	stopDocumentOnAllScreens,
 	playDocumentOnOneScreen,
 	stopDocumentOnOneScreen,
+	editUserProfile,
 } = require("../controllers/user-ctrl");
 
 const { userLogin } = require("../middleware/auth");
 
 router.get("/user", userLogin, getUser);
 router.get("/screens", userLogin, getAllScreens);
-router.get("/document", userLogin, getOneDocument);
+router.get("/document/:documentId", userLogin, getOneDocument);
 router.get("/documents", userLogin, getAllDocuments);
 router.get("/playing-screens", userLogin, currentPlayingScreens);
 router.post("/add-screen", userLogin, addOneScreenUser);
@@ -33,6 +35,8 @@ router.post("/play-document-all-screens", userLogin, playDocumentOnAllScreens);
 router.post("/play-document-one-screen", userLogin, playDocumentOnOneScreen);
 router.post("/stop-document-all-screens", userLogin, stopDocumentOnAllScreens);
 router.post("/stop-document-one-screen", userLogin, stopDocumentOnOneScreen);
+router.patch("/update-document", userLogin, updateDocumentName);
+router.patch("/edit-user-profile", userLogin, editUserProfile);
 router.delete("/delete-document", userLogin, deleteOneDocument);
 
 module.exports = router;

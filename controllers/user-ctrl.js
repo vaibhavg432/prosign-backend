@@ -265,6 +265,53 @@ const uploadOneDocument = async (req, res) => {
 	}
 };
 
+const updateDocumentName = async (req, res) => {
+	const { id } = req.user;
+	const { documentId, name } = req.body;
+	try {
+		const user = await User.findById(id);
+		console.log(req.body);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		const document = await Document.findById(documentId);
+		if (!document) {
+			return res.status(400).json({
+				success: false,
+				message: "Document not found",
+			});
+		}
+
+		if (document.userId != id) {
+			return res.status(400).json({
+				success: false,
+				message: "Unauthorized",
+			});
+		}
+
+		if (!name) {
+			return res.state(200).json({
+				success: false,
+				message: "Name Cannot be empty",
+			});
+		}
+
+		document.name = name;
+		const savedDocument = await document.save();
+		res.status(200).json({
+			success: true,
+			message: "Document name updated",
+			document: savedDocument,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
 const uploadMultipleDocument = async (req, res) => {
 	const { id } = req.user;
 	const { links } = req.body;
@@ -468,6 +515,35 @@ const stopDocumentOnOneScreen = async (req, res) => {
 	}
 };
 
+const editUserProfile = async (req, res) => {
+	const { id } = req.user;
+	const { name, email, phone, address, bio } = req.body;
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		user.name = name;
+		user.email = email;
+		user.phone = phone;
+		user.address = address;
+		user.bio = bio;
+
+		await user.save();
+
+		res.status(200).json({
+			success: true,
+			message: "User profile updated",
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
 module.exports = {
 	getUser,
 	getAllScreens,
@@ -477,10 +553,12 @@ module.exports = {
 	addOneScreenUser,
 	uploadOneDocument,
 	uploadMultipleDocument,
+	updateDocumentName,
 	deleteOneDocument,
 	addMultipleScreensUser,
 	playDocumentOnAllScreens,
 	playDocumentOnOneScreen,
 	stopDocumentOnAllScreens,
 	stopDocumentOnOneScreen,
+	editUserProfile,
 };
