@@ -35,6 +35,14 @@ const screenSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	isGrouped: {
+		type: Boolean,
+		default: false,
+	},
+	groupId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "ScreenGroup",
+	},
 });
 
 module.exports = mongoose.model("Screen", screenSchema);

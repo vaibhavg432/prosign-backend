@@ -1,24 +1,26 @@
 const express = require("express");
 const router = express.Router();
+const { getUser, editUserProfile } = require("../controllers/User/user-ctrl");
 
 const {
-	getUser,
-	getAllScreens,
 	getOneDocument,
 	getAllDocuments,
-	currentPlayingScreens,
-	addOneScreenUser,
-	addMultipleScreensUser,
 	uploadOneDocument,
 	uploadMultipleDocument,
 	updateDocumentName,
 	deleteOneDocument,
+} = require("../controllers/User/user-doc-ctrl");
+
+const {
+	getAllScreens,
+	currentPlayingScreens,
+	addOneScreenUser,
+	addMultipleScreensUser,
 	playDocumentOnAllScreens,
 	stopDocumentOnAllScreens,
 	playDocumentOnOneScreen,
 	stopDocumentOnOneScreen,
-	editUserProfile,
-} = require("../controllers/user-ctrl");
+} = require("../controllers/User/user-screen-ctrl");
 
 const { userLogin } = require("../middleware/auth");
 
