@@ -15,6 +15,26 @@ const getAllPlaylistForUser = async (req, res) => {
 	}
 };
 
+const getOnePlaylistForUser = async (req, res) => {
+	const { playlistId } = req.params;
+	try {
+		const playlist = await Playlist.findOne({ _id: playlistId });
+		if (!playlist) {
+			return res.status(400).json({
+				success: false,
+				message: "Playlist not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Playlist found",
+			playlist: playlist,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
 const createPlaylistForUser = async (req, res) => {
 	const { id } = req.user;
 	const { name, documents } = req.body;
@@ -109,6 +129,7 @@ const deletePlaylistForUser = async (req, res) => {
 
 module.exports = {
 	getAllPlaylistForUser,
+	getOnePlaylistForUser,
 	createPlaylistForUser,
 	editPlaylistForUser,
 	deletePlaylistForUser,
