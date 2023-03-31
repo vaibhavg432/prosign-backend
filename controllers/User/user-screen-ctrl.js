@@ -408,6 +408,43 @@ const stopPlaylistOnOneGroup = async (req, res) => {
 	}
 };
 
+const playlistOnCurrentScreen = async (req, res) => {
+	const { id } = req.user;
+	try {
+		const screen = await Screen.findById(id);
+		if (!screen) {
+			return res.status(400).json({
+				success: false,
+				message: "Screen not found",
+			});
+		}
+
+		if (!screen.isPlaying) {
+			return res.status(200).json({
+				success: false,
+				message: "Screen is not playing",
+			});
+		}
+
+		const { document } = screen.document;
+		const playlist = await Playlist.findById(document);
+		if (!playlist) {
+			return res.status(200).json({
+				success: false,
+				message: "Playlist not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Playlist found",
+			documents: playlist.documents,
+		});
+	} catch (err) {
+		res.status.json(err);
+	}
+};
+
 module.exports = {
 	getAllScreens,
 	currentPlayingScreens,

@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Screen = require("../models/Screen");
 const Document = require("../models/Document");
+const Playlist = require("../models/Playlist");
 const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -78,11 +79,19 @@ const checkCurrentStatus = async (req, res) => {
 			});
 		}
 		if (screen.isPlaying) {
+			const playlist = await Playlist.findById(screen.document);
+			if (!playlist) {
+				return res.status(400).json({
+					success: false,
+					message: "Playlist not found",
+				});
+			}
+
 			return res.status(200).json({
 				success: true,
 				playing: true,
 				message: "Screen is playing",
-				document: screen.document,
+				document: playlist.documents,
 			});
 		}
 
