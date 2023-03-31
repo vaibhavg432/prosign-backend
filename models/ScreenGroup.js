@@ -18,7 +18,7 @@ const ScreenGroupSchema = new mongoose.Schema({
 	},
 	document: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: "Document",
+		ref: "Playlist",
 	},
 	dateCreated: {
 		type: Date,

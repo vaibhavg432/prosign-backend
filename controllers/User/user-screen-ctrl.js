@@ -1,5 +1,7 @@
 const User = require("../../models/User");
 const Screen = require("../../models/Screen");
+const ScreenGroup = require("../../models/ScreenGroup");
+
 const getAllScreens = async (req, res) => {
 	const { id } = req.user;
 	try {
@@ -135,8 +137,8 @@ const addMultipleScreensUser = async (req, res) => {
 				user.screenCount +
 				1 +
 				user.name.split(" ")[0] +
-				crypto.randomBytes(4).toString("hex");
-			const password = crypto.randomBytes(8).toString("hex");
+				require("crypto").randomBytes(4).toString("hex");
+			const password = require("crypto").randomBytes(8).toString("hex");
 
 			const screen = new Screen({
 				userId: id,
@@ -157,7 +159,7 @@ const addMultipleScreensUser = async (req, res) => {
 			screens: screens,
 		});
 	} catch (err) {
-		res.status(500).json(err);
+		res.status(500).json(err.message);
 	}
 };
 
@@ -232,6 +234,57 @@ const playDocumentOnOneScreen = async (req, res) => {
 	}
 };
 
+const playPlaylistOnMixedScreens = async (req, res) => {
+	const { id } = req.user;
+	const { group, alone, playlist } = req.body;
+	try {
+		if (group.length === 0 && alone.length === 0) {
+			return res.status(200).json({
+				success: false,
+				message: "No screens selected",
+			});
+		}
+
+		if (playlist === "") {
+			return res.status(200).json({
+				success: false,
+				message: "No playlist selected",
+			});
+		}
+
+		for (let i = 0; i < group.length; i++) {
+			const screenGroup = await ScreenGroup.findOne({ _id: group[i] });
+			for (let j = 0; j < screenGroup.screens.length; j++) {
+				const screen = await Screen.findById(screenGroup.screens[j]);
+				screen.document = playlist;
+				screen.isPlaying = true;
+				screen.isUpdated = 1 - screen.isUpdated;
+				screen.lastUpdated = Date.now();
+				await screen.save();
+			}
+			screenGroup.document = playlist;
+			screenGroup.isPlaying = true;
+			await screenGroup.save();
+		}
+
+		for (let i = 0; i < alone.length; i++) {
+			const screen = await Screen.findById(alone[i]);
+			screen.document = playlist;
+			screen.isPlaying = true;
+			screen.isUpdated = 1 - screen.isUpdated;
+			screen.lastUpdated = Date.now();
+			await screen.save();
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Playlist played on screens",
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
 const stopDocumentOnAllScreens = async (req, res) => {
 	const { id } = req.user;
 	try {
@@ -300,6 +353,61 @@ const stopDocumentOnOneScreen = async (req, res) => {
 	}
 };
 
+const stopPlaylistOnOneScreen = async (req, res) => {
+	const { id } = req.user;
+	const { screenId } = req.params;
+	try {
+		const screen = await Screen.findById(screenId);
+		if (!screen) {
+			res.status(400).json({
+				success: false,
+				message: "Screen not found",
+			});
+		}
+
+		screen.isPlaying = false;
+		screen.isUpdated = 1 - screen.isUpdated;
+		await Screen.findByIdAndUpdate(screenId, screen);
+
+		res.status(200).json({
+			success: true,
+			message: "Playlist stopped on screen",
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
+const stopPlaylistOnOneGroup = async (req, res) => {
+	const { id } = req.user;
+	const { groupId } = req.params;
+	try {
+		const group = await ScreenGroup.findById(groupId);
+		if (!group) {
+			return res.status(400).json({
+				success: false,
+				message: "Group not found",
+			});
+		}
+
+		for (let i = 0; i < group.screens.length; i++) {
+			const screen = await Screen.findById(group.screens[i]);
+			screen.isPlaying = false;
+			screen.isUpdated = 1 - screen.isUpdated;
+			await screen.save();
+		}
+		group.isPlaying = false;
+		await group.save();
+
+		res.status(200).json({
+			success: true,
+			message: "Playlist stopped on group",
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
 module.exports = {
 	getAllScreens,
 	currentPlayingScreens,
@@ -307,6 +415,9 @@ module.exports = {
 	addMultipleScreensUser,
 	playDocumentOnAllScreens,
 	playDocumentOnOneScreen,
+	playPlaylistOnMixedScreens,
 	stopDocumentOnAllScreens,
 	stopDocumentOnOneScreen,
+	stopPlaylistOnOneScreen,
+	stopPlaylistOnOneGroup,
 };

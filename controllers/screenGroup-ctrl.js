@@ -5,29 +5,25 @@ const Screen = require("../models/Screen");
 const getAllScreenGroupsForUser = async (req, res) => {
 	const { id } = req.user;
 	try {
-		const User = await User.findById(id);
-		if (!User) {
-			return res.status(400).json({
-				success: false,
-				message: "User not found",
-			});
-		}
-
-		const allScreens = await ScreenGroup.find({ userId: id });
-		const screens = [];
-		// group allscreens by name screens = [[{name : name, screens : [screenGroup]}]]
-		allScreens.forEach((screen) => {
-			const index = screens.findIndex((s) => s.name === screen.name);
-			if (index === -1) {
-				screens.push({ name: screen.name, screens: [screen] });
-			} else {
-				screens[index].screens.push(screen);
-			}
-		});
+		const screens = await ScreenGroup.find({ userId: id });
 		return res.status(200).json({
 			success: true,
 			message: "All screen groups for user",
-			screenGroup: screens,
+			screens: screens,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
+const getAllUngroupedScreensForUser = async (req, res) => {
+	const { id } = req.user;
+	try {
+		const screens = await Screen.find({ userId: id, isGrouped: false });
+		return res.status(200).json({
+			success: true,
+			message: "All ungrouped screens for user",
+			screens: screens,
 		});
 	} catch (err) {
 		res.status(500).json(err);
@@ -187,18 +183,10 @@ const editAScreenGroupForUser = async (req, res) => {
 };
 
 const deleteAScreenGroupForUser = async (req, res) => {
-	const { id } = req.user;
 	const { groupId } = req.params;
 	try {
-		const user = await User.findById(id);
-		if (!user) {
-			return res.status(200).json({
-				success: false,
-				message: "User not found",
-			});
-		}
-
 		const screenGroup = await ScreenGroup.findById(groupId);
+		console.log(screenGroup);
 		if (!screenGroup) {
 			return res.status(200).json({
 				success: false,
@@ -208,26 +196,12 @@ const deleteAScreenGroupForUser = async (req, res) => {
 
 		for (let i = 0; i < screenGroup.screens.length; i++) {
 			const screen = await Screen.findById(screenGroup.screens[i]);
-			if (!screen) {
-				return res.status(200).json({
-					success: false,
-					message: "Screen not found",
-				});
-			}
-
-			if (screen.userId != id) {
-				return res.status(200).json({
-					success: false,
-					message: "Screen does not belong to user",
-				});
-			}
-
 			screen.isGrouped = false;
 			screen.groupId = null;
 			await screen.save();
 		}
 
-		await screenGroup.remove();
+		await ScreenGroup.findByIdAndDelete(groupId);
 		res.status(200).json({
 			success: true,
 			message: "Screen group deleted",
@@ -239,6 +213,7 @@ const deleteAScreenGroupForUser = async (req, res) => {
 
 module.exports = {
 	getAllScreenGroupsForUser,
+	getAllUngroupedScreensForUser,
 	createAScreenGroupForUser,
 	editAScreenGroupForUser,
 	deleteAScreenGroupForUser,

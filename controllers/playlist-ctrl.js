@@ -1,4 +1,6 @@
 const Playlist = require("../models/Playlist");
+const ScreenGroup = require("../models/ScreenGroup");
+const Screen = require("../models/Screen");
 const User = require("../models/User");
 
 const getAllPlaylistForUser = async (req, res) => {
@@ -39,6 +41,19 @@ const createPlaylistForUser = async (req, res) => {
 	const { id } = req.user;
 	const { name, documents } = req.body;
 	try {
+		if (!name || !documents) {
+			return res.status(200).json({
+				success: false,
+				message: "Playlist name and documents are required",
+			});
+		}
+
+		if (documents.length === 0) {
+			return res.status(200).json({
+				success: false,
+				message: "Playlist must have at least one document",
+			});
+		}
 		const playlistCheck = await Playlist.findOne({
 			name: name,
 			userId: id,
@@ -106,7 +121,6 @@ const editPlaylistForUser = async (req, res) => {
 };
 
 const deletePlaylistForUser = async (req, res) => {
-	const { id } = req.user;
 	const { playlistId } = req.params;
 	try {
 		const playlist = await Playlist.findById(playlistId);
@@ -117,7 +131,7 @@ const deletePlaylistForUser = async (req, res) => {
 			});
 		}
 
-		await playlist.remove();
+		await Playlist.findByIdAndDelete(playlistId);
 		res.status(200).json({
 			success: true,
 			message: "Playlist deleted",
