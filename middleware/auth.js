@@ -10,7 +10,6 @@ const userLogin = async (req, res, next) => {
 			message: "Access denied",
 		});
 	}
-
 	token = token.replace("Bearer ", "");
 	try {
 		const verified = jwt.verify(token, JWT_SECRET);

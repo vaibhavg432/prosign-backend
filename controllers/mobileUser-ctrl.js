@@ -81,7 +81,7 @@ const checkCurrentStatus = async (req, res) => {
 		if (screen.isPlaying) {
 			const playlist = await Playlist.findById(screen.document);
 			if (!playlist) {
-				return res.status(400).json({
+				return res.status(200).json({
 					success: false,
 					message: "Playlist not found",
 				});
@@ -134,9 +134,31 @@ const getOneDocument = async (req, res) => {
 		res.status(500).json(err);
 	}
 };
+
+const getScreenInfo = async (req, res) => {
+	const { id } = req.user;
+	try {
+		const screen = await Screen.findById(id);
+		if (!screen) {
+			return res.status(400).json({
+				success: false,
+				message: "Screen not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Screen found",
+			screen: screen,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
 module.exports = {
 	login,
 	logout,
 	checkCurrentStatus,
 	getOneDocument,
+	getScreenInfo,
 };

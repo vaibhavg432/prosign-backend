@@ -93,7 +93,7 @@ const editPlaylistForUser = async (req, res) => {
 				message: "Playlist not found",
 			});
 		}
-
+		console.log(req.body);
 		const playlistCheck = await Playlist.findOne({
 			name: name,
 			userId: id,
@@ -104,11 +104,10 @@ const editPlaylistForUser = async (req, res) => {
 				message: `Playlist with name ${name} already exists`,
 			});
 		}
-
 		playlist.name = name;
 		playlist.documents = documents;
 
-		await playlist.save();
+		await Playlist.findByIdAndUpdate(playlistId, playlist);
 
 		res.status(200).json({
 			success: true,
