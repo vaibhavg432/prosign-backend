@@ -86,12 +86,16 @@ const checkCurrentStatus = async (req, res) => {
 					message: "Playlist not found",
 				});
 			}
-
+			const documents = [];
+			for (let i = 0; i < playlist.documents.length; i++) {
+				const document = await Document.findById(playlist.documents[i]);
+				documents.push(document.link);
+			}
 			return res.status(200).json({
 				success: true,
 				playing: true,
 				message: "Screen is playing",
-				document: playlist.documents,
+				document: documents,
 			});
 		}
 

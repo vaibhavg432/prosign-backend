@@ -445,6 +445,30 @@ const playlistOnCurrentScreen = async (req, res) => {
 	}
 };
 
+const logoutScreen = async (req, res) => {
+	const { id } = req.user;
+	const { screenId } = req.params;
+	try {
+		const screen = await Screen.findById(screenId);
+		if (!screen) {
+			return res.status(400).json({
+				success: false,
+				message: "Screen not found",
+			});
+		}
+
+		screen.status = "inactive";
+		await Screen.findByIdAndUpdate(screenId, screen);
+
+		res.status(200).json({
+			success: true,
+			message: "Screen logged out",
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
 module.exports = {
 	getAllScreens,
 	currentPlayingScreens,
@@ -457,4 +481,5 @@ module.exports = {
 	stopDocumentOnOneScreen,
 	stopPlaylistOnOneScreen,
 	stopPlaylistOnOneGroup,
+	logoutScreen,
 };

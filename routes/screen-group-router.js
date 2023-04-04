@@ -13,6 +13,7 @@ const {
 	playPlaylistOnMixedScreens,
 	stopPlaylistOnOneScreen,
 	stopPlaylistOnOneGroup,
+	logoutScreen,
 } = require("../controllers/User/user-screen-ctrl");
 
 const {
@@ -48,6 +49,7 @@ router.post(
 	userLogin,
 	stopPlaylistOnOneGroup,
 );
+router.post("/logout-screen/:screenId", userLogin, logoutScreen);
 
 //user screen groups
 router.get("/screen-groups", userLogin, getAllScreenGroupsForUser);
