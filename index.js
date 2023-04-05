@@ -11,6 +11,7 @@ const userRouter = require("./routes/user-router");
 const mobileUserRouter = require("./routes/mobileUser-router");
 const screenGroupRouter = require("./routes/screen-group-router");
 const playlistRouter = require("./routes/playlist-router");
+const syncRouter = require("./routes/sync-router");
 
 const app = express();
 db();
@@ -33,6 +34,7 @@ app.use("/api/user", userRouter);
 app.use("/api/mobileUser", mobileUserRouter);
 app.use("/api/screen-group", screenGroupRouter);
 app.use("/api/playlist", playlistRouter);
+app.use("/api/sync", syncRouter);
 
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);

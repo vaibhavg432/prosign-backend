@@ -85,10 +85,10 @@ const uploadOneDocument = async (req, res) => {
 			userId: id,
 			name: req.files.data.name,
 			link: link,
+			type: req.files.data.mimetype.split("/")[0],
 		});
 
 		const savedDocument = await document.save();
-
 		res.status(200).json({
 			success: true,
 			message: "Document uploaded",

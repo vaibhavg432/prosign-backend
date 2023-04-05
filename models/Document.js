@@ -2,7 +2,8 @@ const mongooes = require("mongoose");
 
 const DocumentSchema = new mongooes.Schema({
 	link: String,
-	name : String,
+	name: String,
+	type: String,
 	userId: {
 		type: mongooes.Schema.Types.ObjectId,
 		ref: "User",

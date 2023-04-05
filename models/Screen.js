@@ -7,7 +7,7 @@ const activeStatus = Object.freeze({
 });
 
 const screenSchema = new mongoose.Schema({
-	screenName: String,
+	name: String,
 	username: String,
 	password: String,
 	userId: {
