@@ -163,6 +163,46 @@ const addMultipleScreensUser = async (req, res) => {
 	}
 };
 
+const updateScreenName = async (req, res) => {
+	const { id } = req.user;
+	const { screenId } = req.params;
+	const { name } = req.body;
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		const screen = await Screen.findById(screenId);
+		if (!screen) {
+			return res.status(400).json({
+				success: false,
+				message: "Screen not found",
+			});
+		}
+
+		if (!name) {
+			return res.status(200).json({
+				success: false,
+				message: "Name not provided",
+			});
+		}
+
+		screen.name = name;
+		await Screen.findByIdAndUpdate(screenId, screen);
+		res.status(200).json({
+			success: true,
+			message: "Screen Name updated",
+			screen: screen,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
+};
+
 const playDocumentOnAllScreens = async (req, res) => {
 	const { id } = req.user;
 	const { documentId } = req.body;
@@ -474,6 +514,7 @@ module.exports = {
 	currentPlayingScreens,
 	addOneScreenUser,
 	addMultipleScreensUser,
+	updateScreenName,
 	playDocumentOnAllScreens,
 	playDocumentOnOneScreen,
 	playPlaylistOnMixedScreens,

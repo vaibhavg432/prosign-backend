@@ -6,6 +6,7 @@ const {
 	currentPlayingScreens,
 	addOneScreenUser,
 	addMultipleScreensUser,
+	updateScreenName,
 	playDocumentOnAllScreens,
 	stopDocumentOnAllScreens,
 	playDocumentOnOneScreen,
@@ -50,6 +51,7 @@ router.post(
 	stopPlaylistOnOneGroup,
 );
 router.post("/logout-screen/:screenId", userLogin, logoutScreen);
+router.patch("/update-screen-name/:screenId", userLogin, updateScreenName);
 
 //user screen groups
 router.get("/screen-groups", userLogin, getAllScreenGroupsForUser);
