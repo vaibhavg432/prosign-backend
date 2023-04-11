@@ -6,7 +6,11 @@ const Document = require("../models/Document");
 const getAllUsers = async (req, res) => {
 	try {
 		const users = await User.find({ role: "user" }).select("-password");
-		res.json(users);
+		res.status(200).json({
+			success: true,
+			message: "All users",
+			users: users,
+		});
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
@@ -22,8 +26,36 @@ const getAllAdmins = async (req, res) => {
 	}
 };
 
+const totalNumberOfScreens = async (req, res) => {
+	try {
+		const screens = await Screen.find();
+		console.log(screens.length);
+		res.status(200).json({
+			success: true,
+			message: "Total number of screens",
+			screens: screens,
+		});
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const currentPlayingScreens = async (req, res) => {
+	try {
+		const screens = await Screen.find({ isPlaying: true });
+		res.status(200).json({
+			success: true,
+			message: "Current playing screens",
+			screens: screens,
+		});
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
 const updateScreenLimitforUser = async (req, res) => {
-	const { screenLimit, userId } = req.body;
+	const { userId } = req.params;
+	const { screenLimit } = req.body;
 	try {
 		const user = await User.find({ _id: userId });
 		if (!user) {
@@ -43,6 +75,35 @@ const updateScreenLimitforUser = async (req, res) => {
 			success: true,
 			message: "Screen Limit updated",
 			user: updatedUser,
+		});
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const toggleStatusOfUser = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const user = await User.findById(id);
+		if (!user) {
+			return res.status(400).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		const status = user.status;
+		if (status === "active") {
+			user.status = "inactive";
+		} else {
+			user.status = "active";
+		}
+
+		const updatedUser = await user.save();
+
+		res.status(200).json({
+			success: true,
+			message: "User status updated",
 		});
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -109,7 +170,10 @@ const removeUser = async (req, res) => {
 module.exports = {
 	getAllUsers,
 	getAllAdmins,
+	totalNumberOfScreens,
+	currentPlayingScreens,
 	removeUser,
+	toggleStatusOfUser,
 	updateScreenLimitforUser,
 	viewScreensOfOneUser,
 };
