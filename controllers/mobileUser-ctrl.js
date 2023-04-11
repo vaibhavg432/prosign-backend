@@ -107,7 +107,7 @@ const checkCurrentStatus = async (req, res) => {
 const getOneDocument = async (req, res) => {
 	const { id } = req.user;
 	const { documentId } = req.params;
-	try {
+	try {D
 		const user = await Screen.findById(id);
 		if (!user) {
 			return res.status(400).json({

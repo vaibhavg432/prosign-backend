@@ -75,7 +75,13 @@ const uploadOneDocument = async (req, res) => {
 				message: "User not found",
 			});
 		}
-
+		// const type = req.files.data.mimetype.split("/")[0];
+		// if ((type !== "image") | (type !== "video")) {
+		// 	return res.status(200).json({
+		// 		success: false,
+		// 		message: "Only image and video files are allowed",
+		// 	});
+		// }
 		s3FileUpload(req);
 		const link =
 			"https://digi-board.s3.ap-south-1.amazonaws.com/" +
