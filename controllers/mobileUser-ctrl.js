@@ -78,17 +78,20 @@ const checkCurrentStatus = async (req, res) => {
 				message: "Screen not found",
 			});
 		}
+		const login = screen.status === "active" ? true : false;
 		if (screen.isPlaying) {
 			const playlist = await Playlist.findById(screen.document);
 			if (!playlist) {
 				return res.status(200).json({
 					success: false,
+					login: login,
 					message: "Playlist not found",
 				});
 			}
 			return res.status(200).json({
 				success: true,
 				playing: true,
+				login: login,
 				message: "Screen is playing",
 				document: playlist.documents,
 			});
@@ -97,6 +100,7 @@ const checkCurrentStatus = async (req, res) => {
 		res.status(200).json({
 			success: true,
 			playing: false,
+			login: login,
 			message: "Screen is not playing",
 		});
 	} catch (err) {
@@ -107,7 +111,8 @@ const checkCurrentStatus = async (req, res) => {
 const getOneDocument = async (req, res) => {
 	const { id } = req.user;
 	const { documentId } = req.params;
-	try {D
+	try {
+		D;
 		const user = await Screen.findById(id);
 		if (!user) {
 			return res.status(400).json({
