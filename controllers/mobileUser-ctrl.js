@@ -134,7 +134,7 @@ const getOneDocument = async (req, res) => {
 			message: "Document found",
 			document: document,
 		});
-	} catch (error) {
+	} catch (err) {
 		res.status(500).json(err);
 	}
 };
