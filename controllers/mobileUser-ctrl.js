@@ -112,7 +112,7 @@ const getOneDocument = async (req, res) => {
 	const { id } = req.user;
 	const { documentId } = req.params;
 	try {
-		D;
+		console.log(id, documentId);
 		const user = await Screen.findById(id);
 		if (!user) {
 			return res.status(400).json({
