@@ -509,6 +509,7 @@ const logoutScreen = async (req, res) => {
 	}
 };
 
+
 module.exports = {
 	getAllScreens,
 	currentPlayingScreens,

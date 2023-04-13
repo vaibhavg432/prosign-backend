@@ -78,6 +78,15 @@ const checkCurrentStatus = async (req, res) => {
 				message: "Screen not found",
 			});
 		}
+		const user = await User.findById(screen.userId);
+		if(user.status === "inactive"){
+			return res.status(200).json({
+				success: true,
+				playing: false,	
+				login: login,
+				message: "Screen is not playing",
+			});
+		}
 		const login = screen.status === "active" ? true : false;
 		if (screen.isPlaying) {
 			const playlist = await Playlist.findById(screen.document);

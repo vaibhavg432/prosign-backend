@@ -86,6 +86,7 @@ const editPlaylistForUser = async (req, res) => {
 	const { playlistId } = req.params;
 	const { name, documents } = req.body;
 	try {
+		console.log(playlistId);
 		const playlist = await Playlist.findById(playlistId);
 		if (!playlist) {
 			return res.status(400).json({
@@ -93,7 +94,8 @@ const editPlaylistForUser = async (req, res) => {
 				message: "Playlist not found",
 			});
 		}
-		console.log(req.body);
+		console.log("name", name);
+		console.log("documents", documents);
 		const playlistCheck = await Playlist.findOne({
 			name: name,
 			userId: id,
