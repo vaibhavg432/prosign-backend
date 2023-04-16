@@ -18,6 +18,7 @@ const s3FileUpload = (image) => {
 		Bucket: AWS_BUCKET_NAME,
 		Key: image.files.data.name,
 		Body: fileContent,
+		contentDisposition: "inline",
 	};
 
 	console.log("Uploading file to S3 bucket", params);

@@ -132,13 +132,12 @@ const addMultipleScreensUser = async (req, res) => {
 
 		const screens = [];
 		for (let i = 0; i < count; i++) {
+			const names = user.name.split(" ");
 			const username =
-				"screen" +
+				names[0]?.charAt(0).toUpperCase() +
+				names[1]?.charAt(0).toUpperCase() +
 				user.screenCount +
-				1 +
-				user.name.split(" ")[0] +
-				require("crypto").randomBytes(4).toString("hex");
-			const password = require("crypto").randomBytes(8).toString("hex");
+				1;
 
 			const screen = new Screen({
 				userId: id,
@@ -508,7 +507,6 @@ const logoutScreen = async (req, res) => {
 		res.status(500).json(err);
 	}
 };
-
 
 module.exports = {
 	getAllScreens,
