@@ -73,7 +73,7 @@ const addOneScreenUser = async (req, res) => {
 			});
 		}
 
-		const remainingScreens = user.screenLimit - user.screens.length;
+		const remainingScreens = user.screenLimit - user.screenCount;
 		if (remainingScreens <= 0) {
 			res.status(400).json({
 				success: false,
@@ -81,22 +81,23 @@ const addOneScreenUser = async (req, res) => {
 			});
 		}
 
+		const names = user.name.split(" ");
+		const name = "Screen " + user.screenCount + 1;
 		const username =
-			"screen" +
+			names[0]?.charAt(0).toUpperCase() +
+			names[1]?.charAt(0).toUpperCase() +
 			user.screenCount +
-			1 +
-			user.name +
-			crypto.randomBytes(4).toString("hex");
-		const password = crypto.randomBytes(8).toString("hex");
+			1;
+		const password = Math.floor(100000 + Math.random() * 900000);
 
 		const screen = new Screen({
 			userId: id,
+			name: name,
 			username: username,
 			password: password,
 		});
 
 		const savedScreen = await screen.save();
-		user.screens.push(savedScreen._id);
 		user.screenCount += 1;
 		await user.save();
 		res.status(200).json({
@@ -122,7 +123,7 @@ const addMultipleScreensUser = async (req, res) => {
 			});
 		}
 
-		const remainingScreens = user.screenLimit - user.screens.length;
+		const remainingScreens = user.screenLimit - user.screenCount;
 		if (remainingScreens - count < 0) {
 			return res.status(400).json({
 				success: false,
@@ -133,20 +134,22 @@ const addMultipleScreensUser = async (req, res) => {
 		const screens = [];
 		for (let i = 0; i < count; i++) {
 			const names = user.name.split(" ");
+			const name = "Screen " + user.screenCount + 1;
 			const username =
 				names[0]?.charAt(0).toUpperCase() +
 				names[1]?.charAt(0).toUpperCase() +
 				user.screenCount +
 				1;
+			const password = Math.floor(100000 + Math.random() * 900000);
 
 			const screen = new Screen({
 				userId: id,
+				name: name,
 				username: username,
 				password: password,
 			});
 
 			const savedScreen = await screen.save();
-			user.screens.push(savedScreen._id);
 			user.screenCount += 1;
 			screens.push(savedScreen);
 		}

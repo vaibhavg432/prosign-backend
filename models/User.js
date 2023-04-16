@@ -62,12 +62,6 @@ const UserSchema = new mongoose.Schema({
 		type: Number,
 		default: 0,
 	},
-	screens: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Screen",
-		},
-	],
 });
 
 module.exports = User = mongoose.model("user", UserSchema);
