@@ -41,7 +41,12 @@ const createAScreenGroupForUser = async (req, res) => {
 				message: "User not found",
 			});
 		}
-
+		if(screens.length < 1) {
+			return res.status(200).json({
+				success: false,
+				message: "No screens selected",
+			});
+		}
 		const screenG = await ScreenGroup.findOne({ name: name, userId: id });
 		if (screenG) {
 			return res.status(200).json({
