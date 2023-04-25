@@ -57,6 +57,7 @@ const updateScreenLimitforUser = async (req, res) => {
 	const { userId } = req.params;
 	const { screenLimit } = req.body;
 	try {
+		console.log(userId, screenLimit	)
 		const user = await User.find({ _id: userId });
 		if (!user) {
 			return res.status(400).json({
@@ -65,9 +66,10 @@ const updateScreenLimitforUser = async (req, res) => {
 			});
 		}
 
+		const newScreenLimit = screenLimit + user.screenLimit;
 		const updatedUser = await User.findOneAndUpdate(
 			{ _id: userId },
-			{ screenLimit: screenLimit },
+			{ screenLimit:  newScreenLimit},
 			{ new: true },
 		);
 
